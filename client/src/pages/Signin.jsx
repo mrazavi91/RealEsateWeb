@@ -1,13 +1,18 @@
 import React, { useState } from 'react'
-import { useNavigate , Link} from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate, Link } from 'react-router-dom'
+import { signInStart , signInSuccess , signInFailure } from '../redux/user/userSlice'
+import { data } from 'autoprefixer'
 
 
 export default function Signin() {
 
   const [formData, setFormData] = useState({})
-  const [error, setError] = useState(null)
-  const [loading, setLoading] = useState(false)
+  // const [error, setError] = useState(null)
+  // const [loading, setLoading] = useState(false)
+  const { loading, error } = useSelector((state)=> state.user)
   const navigate = useNavigate()
+  const dispatch = useDispatch()
 
   const changeHandler = (e) => {
     setFormData({
@@ -21,7 +26,8 @@ export default function Signin() {
 
     try {
 
-      setLoading(true)
+      // setLoading(true) instead we use below
+      dispatch(signInStart())
 
       const res = await fetch("/api/auth/signin",
         {
@@ -35,19 +41,22 @@ export default function Signin() {
       const data = await res.json()
       // console.log(data)
       if (data.success === false) {
-        setLoading(false)
-        setError(data.message)
+        // setLoading(false)
+        // setError(data.message)
+        dispatch(signInFailure(data.message))
         return
       }
 
-      setLoading(false)
-      setError(null)
+      // setLoading(false)
+      // setError(null)
+      dispatch(signInSuccess(data))
       navigate("/")
 
 
     } catch (error) {
-      setLoading(false)
-      setError(error.message)
+      // setLoading(false)
+      // setError(error.message)
+      dispatch(signInFailure(error.message))
 
     }
 
