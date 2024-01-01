@@ -4,7 +4,7 @@ import { useRef } from 'react'
 import {app} from '../firebase'
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage'
 import { useDispatch } from 'react-redux'
-import {updateUserStart, updateUserSuccess,updateUserFailure} from "../redux/user/userSlice.js"
+import {updateUserStart, updateUserSuccess,updateUserFailure, deleteUserStart, deleteUserFailure, deleteUserSuccess} from "../redux/user/userSlice.js"
 
 export default function Profile() {
   const { currentUser, loading, error } = useSelector(state => state.user)
@@ -29,6 +29,8 @@ export default function Profile() {
     }
   }, [file])
 
+
+  // uploading the profile pic 
   const handleFileUpload = (file) => {
     const storage = getStorage(app)
     const fileName = new Date().getTime() + file.name
@@ -60,7 +62,7 @@ export default function Profile() {
     })
   } 
   
-
+  // update profile (post request)
   const submitHandler = async (e) => {
     e.preventDefault()
 
@@ -86,6 +88,27 @@ export default function Profile() {
       
     } catch (error) {
       dispatch(updateUserFailure(error.message))
+    }
+    
+  }
+
+
+  // delete request
+  const deleteUserHandler = async (e) => {
+
+    try {
+      dispatch(deleteUserStart())
+
+      const res = await fetch(`/api/user/delete/${currentUser._id}`, {
+        method: "DELETE"
+      })
+      
+      const data = await res.json()
+
+      dispatch(deleteUserSuccess(data))
+
+    } catch (error) {
+      dispatch(deleteUserFailure(error.message))
     }
     
   }
@@ -161,10 +184,14 @@ export default function Profile() {
       </form>
 
       <div className='flex justify-between mt-5'>
-        <span className='text-red-700 cursor-pointer'
+        
+        <span
+          onClick={deleteUserHandler}
+          className='text-red-700 cursor-pointer'
         >Delete Account</span>
 
-        <span className='text-red-700 cursor-pointer'
+        <span
+          className='text-red-700 cursor-pointer'
         >Sign out</span>
       </div>
 
