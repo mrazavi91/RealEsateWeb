@@ -19,6 +19,7 @@ export default function Profile() {
   const [showListingsError, setShowListingsError] = useState(false)
   const [userListings, setUserListings] = useState([])
   
+  console.log(userListings)
 
   // Firebase storage 
   // allow read;
@@ -158,6 +159,26 @@ export default function Profile() {
     }
   }
 
+  // DELETE the listing 
+  const deleteListingHandler = async (listingId) => {
+    try {
+      const res = await fetch(`/api/listing/delete/${listingId}`, {
+        method: "DELETE"
+      })
+      const data = await res.json()
+
+      if (data.success === false) {
+        console.log(data.message)
+        return;
+      }
+      setUserListings((prev)=> prev.filter((listing)=> listing._id !== listingId))
+    } catch (error) {
+      console.log(error)
+      
+    }
+
+  }
+
 
 
   return (
@@ -285,12 +306,13 @@ export default function Profile() {
                 </Link>
 
                 <div className='flex flex-col items-center'>
-                  <button className='text-red-700 uppercase'>Delete</button>
+                  <button
+                    className='text-red-700 uppercase'
+                    onClick={()=> deleteListingHandler(listing._id)}
+
+                  >Delete</button>
                   <button className='text-green-700 uppercase'>Edit</button>
                 </div>
-
-
-
               </div>
             )
           }
