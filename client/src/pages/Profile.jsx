@@ -5,7 +5,7 @@ import {app} from '../firebase'
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage'
 import { useDispatch } from 'react-redux'
 import {updateUserStart, updateUserSuccess,updateUserFailure, deleteUserStart, deleteUserFailure, deleteUserSuccess, signInStart, signInSuccess, signOutUserFailure, signOutUserStart, signOutUserSuccess} from "../redux/user/userSlice.js"
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 export default function Profile() {
   const { currentUser, loading, error } = useSelector(state => state.user)
@@ -18,6 +18,7 @@ export default function Profile() {
   const [updateSuccess, setUpdateSuccess] = useState(false)
   const [showListingsError, setShowListingsError] = useState(false)
   const [userListings, setUserListings] = useState([])
+  const navigate = useNavigate()
   
   console.log(userListings)
 
@@ -180,7 +181,6 @@ export default function Profile() {
   }
 
 
-
   return (
     <div className='p-3 max-w-lg mx-auto'>
       <h1 className='text-3xl font-semibold text-center my-7'>Profile</h1>
@@ -311,7 +311,12 @@ export default function Profile() {
                     onClick={()=> deleteListingHandler(listing._id)}
 
                   >Delete</button>
-                  <button className='text-green-700 uppercase'>Edit</button>
+                  
+                  <Link to={`/update-listing/${listing._id}`}>
+                    <button
+                      className='text-green-700 uppercase'
+                    >Edit</button>
+                  </Link>
                 </div>
               </div>
             )

@@ -42,6 +42,7 @@ export const updateListing = async (req, res, next) => {
     
 
     try {
+        // i may need to put the listing in another try and catch 
         const listing = await Listing.findById(req.params.id)
 
         if (!listing) {
@@ -66,4 +67,17 @@ export const updateListing = async (req, res, next) => {
     
 }
 
+
+export const getListing = async (req, res, next) => {
+
+    try {
+        const listing = await Listing.findById(req.params.id)
+        if(!listing) return next(errorHandler(401, "Listing not found")) // may need to move to catch
+        res.status(200).json(listing)
+    } catch (error) {
+        
+        next(error)
+    }
+    
+}
 
