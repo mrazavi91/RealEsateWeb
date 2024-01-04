@@ -15,6 +15,7 @@ export default function Search() {
     const navigate = useNavigate()
     const [loading, setLoading] = useState(false)
     const [listings, setListings] = useState([])
+    const [showMore , setShowMore] = useState(false)
     console.log(listings)
 
     // getting the search existed data 
@@ -54,9 +55,17 @@ export default function Search() {
         const fetchListings = async () => {
             try {
                 setLoading(true)
+                setShowMore(false)
                 const searchQuery = urlParams.toString()
                 const res = await fetch(`/api/listing/get?${searchQuery}`)
                 const data = await res.json()
+
+                if (data.length > 8) {
+                    setShowMore(true)
+                } else {
+                    setShowMore(false)
+                }
+
                 if (data.success === false) {
                     console.log(data.message)
                     setLoading(false)
@@ -115,6 +124,22 @@ export default function Search() {
         navigate(`/search?${searchQuery}`)
     }
 
+    const onShowMoreClick = async () => {
+        // staring from the data after limit
+        const numberOfListings = listings.length
+        const startIndex = numberOfListings
+        const urlParams = new URLSearchParams(location.search)
+        urlParams.set("startIndex", startIndex)
+        const searchQuery = urlParams.toString()
+        const res = await fetch(`/api/listing/get?${searchQuery}`)
+        const data = await res.json()
+        if (data.length < 9) {
+            setShowMore(false)
+        }
+        setListings([
+            ...listings, ...data
+        ])
+    }
 
 
 
@@ -250,6 +275,15 @@ export default function Search() {
                   {
                       !loading && listings && listings.map((listing) => (
                           <ListingItem key={listing._id} listing={listing} />))
+                  }
+
+                  {
+                      showMore && (
+                          <button
+                              className='text-green-700 hover:underline p-7 w-full text-center'
+                              onClick={onShowMoreClick}
+                          >Show more</button>
+                      )
                   }
               
               </div>
