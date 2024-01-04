@@ -91,7 +91,7 @@ export default function Home() {
                   backgroundSize: "cover"
                 }}
                 key={offerListing._id}
-                className="h-[500px]"></div>
+                className="h-[800px]"></div>
               
             </SwiperSlide>
           ))}
